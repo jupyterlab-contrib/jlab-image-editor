@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/madhur-tandon/jlab-image-editor.git.git"
+    "url": "https://github.com/madhur-tandon/jlab-image-editor.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
@@ -45,7 +45,9 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^3.1.0"
+    "@jupyterlab/application": "^3.1.0",
+    "file-saver": "^2.0.5",
+    "tui-image-editor": "^3.15.2"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.1.0",
@@ -53,7 +55,7 @@
     "@typescript-eslint/parser": "^4.8.1",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4", 
+    "eslint-plugin-prettier": "^3.1.4",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
@@ -67,7 +69,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "jupyterlab": { 
+  "jupyterlab": {
     "extension": true,
     "outputDir": "image_editor/labextension"
   },
