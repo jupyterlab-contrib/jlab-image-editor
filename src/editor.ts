@@ -20,7 +20,7 @@ export class ImageEditorDocumentWidget extends DocumentWidget<ImageEditorWidget>
         const blob = await base64Response.blob();
 
         // this.content.setContent(encodeURI(`${PageConfig.getBaseUrl()}/files/${this.context.path}`));
-        this.content.setContent(URL.createObjectURL(blob));
+        this.content.setContent(URL.createObjectURL(blob), this.context.path);
     });
   }
 }

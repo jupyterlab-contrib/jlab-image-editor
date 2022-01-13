@@ -33,9 +33,7 @@ export class ImageEditorWidget extends Widget {
         this._ready.resolve(void 0);
     }
 
-    setContent(newValue: string): void {
-      console.log("hi");
-      console.log(newValue);
+    setContent(newValue: string, imageName: string): void {
         if (this._editor === undefined) {
           return;
         }
@@ -44,7 +42,7 @@ export class ImageEditorWidget extends Widget {
     
         if (oldValue !== newValue) {
           if (newValue.length) {
-                this._editor.loadImageFromURL(newValue);
+                this._editor.loadImageFromURL(newValue, imageName);
           }
         }
       }
