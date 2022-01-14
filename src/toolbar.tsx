@@ -2,10 +2,7 @@ import { ReactWidget, ToolbarButtonComponent } from '@jupyterlab/apputils';
 
 import * as React from 'react';
 
-/**
- * A toolbar widget to open Format Panel.
- */
-export class DrawIOToolbarButton extends ReactWidget {
+export class ImageEditorToolbarButton extends ReactWidget {
   constructor(action: any) {
     super();
     this._action = action;
