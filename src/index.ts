@@ -5,12 +5,14 @@ import {
 } from '@jupyterlab/application';
 
 import {
+    CommandToolbarButton,
     ICommandPalette,
     WidgetTracker,
     IWidgetTracker
 } from '@jupyterlab/apputils';
 
 import { Token } from '@lumino/coreutils';
+import { refreshIcon } from  '@jupyterlab/ui-components';
 
 import { ImageEditorDocumentWidget } from './editor';  
 import { ImageEditorFactory } from './factory';
@@ -55,7 +57,21 @@ function activate(
       modelName: 'base64',
       fileTypes: ['png', 'jpg', 'jpeg'],
       defaultFor: ['png', 'jpg', 'jpeg'],
-      commands: app.commands
+      commands: app.commands,
+      toolbarFactory: () => {
+        return [{
+          name: CommandIDs.rotateClockwise,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.rotateClockwise,
+            args: {
+              toolbar: true
+            }
+          })
+        }
+      ]
+      }
     });
   
     factory.widgetCreated.connect((sender, widget) => {
@@ -70,8 +86,8 @@ function activate(
     app.docRegistry.addWidgetFactory(factory);
 
     app.commands.addCommand(CommandIDs.rotateClockwise, {
-      isEnabled: () => tracker.currentWidget !== null,
-      isVisible: () => tracker.currentWidget !== null,
+      label: (args) => args?.toolbar ? '': 'Rotate an Image Editor',
+      icon: refreshIcon,
       execute: () => {
         const widget = tracker.currentWidget;
 

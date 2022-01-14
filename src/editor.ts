@@ -14,19 +14,13 @@ export class ImageEditorDocumentWidget extends DocumentWidget<ImageEditorWidget>
 
   constructor(options: ImageEditorDocumentWidget.IOptions<ImageEditorWidget>) {
     super(options)
-    // this.toolbar.addClass('ieditor-toolbar');
     
     this.context.ready.then(async value => {
         await this.content.ready.promise;
-        // this._addToolbarItems();
         const base64Response = await fetch(`data:image/${this.context.contentsModel?.type};base64,${this.context.model.toString()}`);
         const blob = await base64Response.blob();
 
         this.content.setContent(URL.createObjectURL(blob), this.context.path);
     });
   }
-
-  // private _addToolbarItems(): void {
-  //     this.toolbar.addItem('rotate', new ImageEditorToolbarButton(actions['rotate']));
-  // }
 }
