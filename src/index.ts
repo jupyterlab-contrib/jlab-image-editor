@@ -21,6 +21,9 @@ const FACTORY = 'ImageEditor';
 
 namespace CommandIDs {
   export const rotateClockwise = 'image-editor:rotate-clockwise';
+  export const crop = 'image-editor:crop';
+  export const applyCrop = 'image-editor:apply-crop';
+  export const cancelCrop = 'image-editor:cancel-crop';
 }
 
 type IImageEditorTracker = IWidgetTracker<ImageEditorDocumentWidget>;
@@ -35,6 +38,14 @@ const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
 };
 
 export default extension;
+
+function resizeEditor() {
+  var editor = document.querySelector('.tui-image-editor');
+  var container = document.querySelector('.tui-image-editor-canvas-container');
+  var height = (container as HTMLElement).style.maxHeight;
+
+  (editor as HTMLElement).style.height = height;
+}
 
 function activate(
     app: JupyterFrontEnd,
@@ -69,6 +80,50 @@ function activate(
               toolbar: true
             }
           })
+        },
+        {
+          name: CommandIDs.crop,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.crop,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.applyCrop,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.applyCrop,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.cancelCrop,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.cancelCrop,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: 'docmanager:save-as',
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: 'docmanager:save-as',
+            args: {
+              toolbar: true
+            }
+          })
         }
       ]
       }
@@ -86,7 +141,7 @@ function activate(
     app.docRegistry.addWidgetFactory(factory);
 
     app.commands.addCommand(CommandIDs.rotateClockwise, {
-      label: (args) => args?.toolbar ? '': 'Rotate an Image Editor',
+      label: (args) => args?.toolbar ? 'Rotate': 'Rotate an Image Editor',
       icon: refreshIcon,
       execute: () => {
         const widget = tracker.currentWidget;
@@ -95,14 +150,89 @@ function activate(
           return
         }
         widget.content.editor.rotate(30);
+        
+        const canvas_data = widget.content.editor.toDataURL();
+        widget.context.model.fromString(canvas_data.replace(/^data:image\/\w+;base64,/g, ""));
       }
     })
+
+    app.commands.addCommand(CommandIDs.crop, {
+      label: (args) => args?.toolbar ? 'Crop': 'Crop',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.editor.startDrawingMode('CROPPER');
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyCrop, {
+      label: (args) => args?.toolbar ? 'Apply': 'Apply Crop',
+      execute: async () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        const imageEditor = widget.content.editor;
+        await imageEditor.crop(imageEditor.getCropzoneRect());
+        imageEditor.stopDrawingMode();
+        resizeEditor();
+        const canvas_data = widget.content.editor.toDataURL();
+        widget.context.model.fromString(canvas_data.replace(/^data:image\/\w+;base64,/g, ""));
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.cancelCrop, {
+      label: (args) => args?.toolbar ? 'Cancel': 'Cancel Crop',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.editor.stopDrawingMode();
+      }
+    })
+
+    // app.commands.addCommand(CommandIDs.saveAs, {
+    //   label: (args) => args?.toolbar ? 'Save': 'Save As',
+    //   execute: async () => {
+    //     const widget = tracker.currentWidget;
+
+    //     if(!widget){
+    //       return
+    //     }
+    //     console.log(widget.context.model.toString());
+    //     console.log(widget.content.editor.toDataURL())
+        
+    //     await widget.context.saveAs();
+    //   }
+    // })
 
     if (palette) {
       palette.addItem({
         command: CommandIDs.rotateClockwise,
         category: 'Image Editor Operations'
       });
+      palette.addItem({
+        command: CommandIDs.crop,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.applyCrop,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.cancelCrop,
+        category: 'Image Editor Operations'
+      });
+      // palette.addItem({
+      //   command: CommandIDs.saveAs,
+      //   category: 'Image Editor Operations'
+      // });
     }
 
     return tracker

@@ -16,12 +16,15 @@ export class ImageEditorWidget extends Widget {
     }
 
     constructor(maxWidth: number, maxHeight: number, cornerSize: number, rotatingPointOffset: number) {
-        super();
+        super({
+          node: document.createElement("div")
+        });
+        this.node.appendChild(document.createElement("div")).className = "tui-image-editor";
         this._loadImageEditor(maxWidth, maxHeight, cornerSize, rotatingPointOffset);
       }
 
     private _loadImageEditor(maxWidth: number, maxHeight: number, cornerSize: number, rotatingPointOffset: number): void {
-        this._editor = new ImageEditor(this.node,{
+        this._editor = new ImageEditor((this.node.querySelector(".tui-image-editor") as HTMLElement),{
             cssMaxWidth: maxWidth,
             cssMaxHeight: maxHeight,
             selectionStyle: {
