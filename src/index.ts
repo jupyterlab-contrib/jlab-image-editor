@@ -39,14 +39,6 @@ const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
 
 export default extension;
 
-function resizeEditor() {
-  var editor = document.querySelector('.tui-image-editor');
-  var container = document.querySelector('.tui-image-editor-canvas-container');
-  var height = (container as HTMLElement).style.maxHeight;
-
-  (editor as HTMLElement).style.height = height;
-}
-
 function activate(
     app: JupyterFrontEnd,
     restorer: ILayoutRestorer,
@@ -149,10 +141,8 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.editor.rotate(30);
-        
-        const canvas_data = widget.content.editor.toDataURL();
-        widget.context.model.fromString(canvas_data.replace(/^data:image\/\w+;base64,/g, ""));
+        widget.rotate();
+        widget.updateModel();
       }
     })
 
@@ -164,7 +154,7 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.editor.startDrawingMode('CROPPER');
+        widget.crop();
       }
     })
 
@@ -176,12 +166,8 @@ function activate(
         if(!widget){
           return
         }
-        const imageEditor = widget.content.editor;
-        await imageEditor.crop(imageEditor.getCropzoneRect());
-        imageEditor.stopDrawingMode();
-        resizeEditor();
-        const canvas_data = widget.content.editor.toDataURL();
-        widget.context.model.fromString(canvas_data.replace(/^data:image\/\w+;base64,/g, ""));
+        await widget.applyCrop();
+        widget.updateModel();
       }
     })
 
@@ -193,24 +179,9 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.editor.stopDrawingMode();
+        widget.cancelCrop();
       }
     })
-
-    // app.commands.addCommand(CommandIDs.saveAs, {
-    //   label: (args) => args?.toolbar ? 'Save': 'Save As',
-    //   execute: async () => {
-    //     const widget = tracker.currentWidget;
-
-    //     if(!widget){
-    //       return
-    //     }
-    //     console.log(widget.context.model.toString());
-    //     console.log(widget.content.editor.toDataURL())
-        
-    //     await widget.context.saveAs();
-    //   }
-    // })
 
     if (palette) {
       palette.addItem({
@@ -229,10 +200,6 @@ function activate(
         command: CommandIDs.cancelCrop,
         category: 'Image Editor Operations'
       });
-      // palette.addItem({
-      //   command: CommandIDs.saveAs,
-      //   category: 'Image Editor Operations'
-      // });
     }
 
     return tracker
