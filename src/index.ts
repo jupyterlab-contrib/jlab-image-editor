@@ -7,15 +7,14 @@ import {
 import {
     CommandToolbarButton,
     ICommandPalette,
-    WidgetTracker,
-    IWidgetTracker
+    WidgetTracker
 } from '@jupyterlab/apputils';
 
-import { Token } from '@lumino/coreutils';
 import { refreshIcon } from  '@jupyterlab/ui-components';
 
 import { ImageEditorDocumentWidget } from './editor';  
 import { ImageEditorFactory } from './factory';
+import { IImageEditorTracker } from './tokens';
 
 const FACTORY = 'ImageEditor';
 
@@ -26,13 +25,10 @@ namespace CommandIDs {
   export const cancelCrop = 'image-editor:cancel-crop';
 }
 
-type IImageEditorTracker = IWidgetTracker<ImageEditorDocumentWidget>;
-export const IImageEditorTracker = new Token<IImageEditorTracker>('image-editor/tracki');
-
 const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
     id: '@jupyterlab/image-editor-extension:plugin',
     autoStart: true,
-    requires: [ILayoutRestorer, ICommandPalette],
+    optional: [ILayoutRestorer, ICommandPalette],
     provides: IImageEditorTracker,
     activate
 };
@@ -41,19 +37,21 @@ export default extension;
 
 function activate(
     app: JupyterFrontEnd,
-    restorer: ILayoutRestorer,
-    palette: ICommandPalette,
+    restorer: ILayoutRestorer | null,
+    palette: ICommandPalette | null,
   ): IImageEditorTracker {
   
     const namespace = 'image-editor';
     const tracker = new WidgetTracker<ImageEditorDocumentWidget>({ namespace });
   
     // Handle state restoration.
-    restorer.restore(tracker, {
-      command: 'docmanager:open',
-      args: widget => ({ path: widget.context.path, factory: FACTORY }),
-      name: widget => widget.context.path
-    });
+    if(restorer) {
+      restorer.restore(tracker, {
+        command: 'docmanager:open',
+        args: widget => ({ path: widget.context.path, factory: FACTORY }),
+        name: widget => widget.context.path
+      });
+    }
   
     const factory = new ImageEditorFactory({
       name: FACTORY,
@@ -122,7 +120,11 @@ function activate(
     });
   
     factory.widgetCreated.connect((sender, widget) => {
-      widget.title.icon = 'jp-MaterialIcon jp-ImageIcon'; // TODO change
+      const types = app.docRegistry.getFileTypesForPath(widget.context.path);
+
+      if (types.length > 0) {
+        widget.title.icon = types[0].icon!;
+      }
   
       // Notify the instance tracker if restore data needs to update.
       widget.context.pathChanged.connect(() => {
@@ -141,8 +143,7 @@ function activate(
         if(!widget){
           return
         }
-        widget.rotate();
-        widget.updateModel();
+        widget.content.rotate();
       }
     })
 
@@ -154,7 +155,7 @@ function activate(
         if(!widget){
           return
         }
-        widget.crop();
+        widget.content.crop();
       }
     })
 
@@ -166,8 +167,7 @@ function activate(
         if(!widget){
           return
         }
-        await widget.applyCrop();
-        widget.updateModel();
+        await widget.content.applyCrop();
       }
     })
 
@@ -179,7 +179,7 @@ function activate(
         if(!widget){
           return
         }
-        widget.cancelCrop();
+        widget.content.cancelCrop();
       }
     })
 
