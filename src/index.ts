@@ -17,6 +17,7 @@ import { refreshIcon } from  '@jupyterlab/ui-components';
 import { ImageEditorFactory } from './factory';
 import { IImageEditorTracker } from './tokens';
 import { ImageEditorWidget } from './widget';
+import { ImageEditorPanelWrapper } from './components/ImageEditorPanel';
 
 const FACTORY = 'ImageEditor';
 
@@ -83,28 +84,28 @@ function activate(
             }
           })
         },
-        {
-          name: CommandIDs.applyCrop,
-          widget: new CommandToolbarButton(
-          {
-            commands: app.commands,
-            id: CommandIDs.applyCrop,
-            args: {
-              toolbar: true
-            }
-          })
-        },
-        {
-          name: CommandIDs.cancelCrop,
-          widget: new CommandToolbarButton(
-          {
-            commands: app.commands,
-            id: CommandIDs.cancelCrop,
-            args: {
-              toolbar: true
-            }
-          })
-        },
+        // {
+        //   name: CommandIDs.applyCrop,
+        //   widget: new CommandToolbarButton(
+        //   {
+        //     commands: app.commands,
+        //     id: CommandIDs.applyCrop,
+        //     args: {
+        //       toolbar: true
+        //     }
+        //   })
+        // },
+        // {
+        //   name: CommandIDs.cancelCrop,
+        //   widget: new CommandToolbarButton(
+        //   {
+        //     commands: app.commands,
+        //     id: CommandIDs.cancelCrop,
+        //     args: {
+        //       toolbar: true
+        //     }
+        //   })
+        // },
         {
           name: 'docmanager:save-as',
           widget: new CommandToolbarButton(
@@ -202,6 +203,16 @@ function activate(
         category: 'Image Editor Operations'
       });
     }
+
+    const prPanel = new ImageEditorPanelWrapper(app.commands, app.docRegistry);
+    prPanel.id = 'imageEditorPanel';
+    prPanel.title.caption = 'Image Editor Panel';
+
+    // Let the application restorer track the running panel for restoration
+    restorer.add(prPanel, namespace);
+
+    // Add the panel to the sidebar
+    app.shell.add(prPanel, 'right', { rank: 1000 });
 
     return tracker
   }
