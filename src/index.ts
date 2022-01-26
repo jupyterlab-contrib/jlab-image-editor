@@ -60,7 +60,6 @@ function activate(
       modelName: 'base64',
       fileTypes: ['png', 'jpg', 'jpeg'],
       defaultFor: ['png', 'jpg', 'jpeg'],
-      commands: app.commands,
       toolbarFactory: () => {
         return [{
           name: CommandIDs.rotateClockwise,
