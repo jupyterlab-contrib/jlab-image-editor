@@ -33,8 +33,10 @@ export class ImageEditorWidget extends Widget {
             const blob = await base64Response.blob();
     
             this.setContent(URL.createObjectURL(blob), context.path);
+            this._ready.resolve(void 0);
+        }).catch(reason => {
+          this._ready.reject(`Fail to load the image for ${context.path}:\n${reason}.`)
         });
-        this._ready.resolve(void 0);
       }
     
     rotate() {

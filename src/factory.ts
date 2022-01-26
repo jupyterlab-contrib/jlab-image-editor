@@ -1,11 +1,10 @@
-import { ImageEditorDocumentWidget } from './editor';
-import { ABCWidgetFactory, DocumentRegistry } from '@jupyterlab/docregistry';
+import { ABCWidgetFactory, DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
 import { ImageEditorWidget } from './widget';
 
-export class ImageEditorFactory extends ABCWidgetFactory<ImageEditorDocumentWidget, DocumentRegistry.IModel>{
+export class ImageEditorFactory extends ABCWidgetFactory<DocumentWidget<ImageEditorWidget>, DocumentRegistry.IModel>{
 
-    protected createNewWidget(context: DocumentRegistry.Context): ImageEditorDocumentWidget {
-        return new ImageEditorDocumentWidget({
+    protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget<ImageEditorWidget> {
+        return new DocumentWidget<ImageEditorWidget>({
             context,
             content: new ImageEditorWidget(context, 700, 500, 20, 70)
         })

@@ -10,11 +10,13 @@ import {
     WidgetTracker
 } from '@jupyterlab/apputils';
 
-import { refreshIcon } from  '@jupyterlab/ui-components';
+import { DocumentWidget } from '@jupyterlab/docregistry';
 
-import { ImageEditorDocumentWidget } from './editor';  
+import { refreshIcon } from  '@jupyterlab/ui-components';
+ 
 import { ImageEditorFactory } from './factory';
 import { IImageEditorTracker } from './tokens';
+import { ImageEditorWidget } from './widget';
 
 const FACTORY = 'ImageEditor';
 
@@ -42,7 +44,7 @@ function activate(
   ): IImageEditorTracker {
   
     const namespace = 'image-editor';
-    const tracker = new WidgetTracker<ImageEditorDocumentWidget>({ namespace });
+    const tracker = new WidgetTracker<DocumentWidget<ImageEditorWidget>>({ namespace });
   
     // Handle state restoration.
     if(restorer) {
