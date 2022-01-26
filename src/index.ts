@@ -84,28 +84,6 @@ function activate(
             }
           })
         },
-        // {
-        //   name: CommandIDs.applyCrop,
-        //   widget: new CommandToolbarButton(
-        //   {
-        //     commands: app.commands,
-        //     id: CommandIDs.applyCrop,
-        //     args: {
-        //       toolbar: true
-        //     }
-        //   })
-        // },
-        // {
-        //   name: CommandIDs.cancelCrop,
-        //   widget: new CommandToolbarButton(
-        //   {
-        //     commands: app.commands,
-        //     id: CommandIDs.cancelCrop,
-        //     args: {
-        //       toolbar: true
-        //     }
-        //   })
-        // },
         {
           name: 'docmanager:save-as',
           widget: new CommandToolbarButton(
@@ -157,6 +135,8 @@ function activate(
         if(!widget){
           return
         }
+        prPanel.isCropping = true;
+        app.shell.activateById(prPanel.id);
         widget.content.crop();
       }
     })
@@ -209,10 +189,12 @@ function activate(
     prPanel.title.caption = 'Image Editor Panel';
 
     // Let the application restorer track the running panel for restoration
-    restorer.add(prPanel, namespace);
+    if(restorer) {
+      restorer.add(prPanel, namespace);
+    }
 
     // Add the panel to the sidebar
-    app.shell.add(prPanel, 'right', { rank: 1000 });
+    app.shell.add(prPanel, 'left', { rank: 1000 });
 
     return tracker
   }
