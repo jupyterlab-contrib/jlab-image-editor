@@ -57,6 +57,11 @@ export class ImageEditorWidget extends Widget {
     cancelCrop() {
       this._editor.stopDrawingMode();
     }
+
+    filter(type: string, options: any) {
+      this._editor.applyFilter(type, options);
+      this.updateModel();
+    }
   
     private updateModel() {
       requestAnimationFrame(()=> {

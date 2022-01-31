@@ -18,6 +18,7 @@ export class ImageEditorPanelWrapper extends ReactWidget {
     this._commands = commands;
     this._docRegistry = docRegistry;
     this._isCropping = false;
+    this._isFilter = false;
   }
 
   private _isCropping : boolean;
@@ -29,6 +30,14 @@ export class ImageEditorPanelWrapper extends ReactWidget {
     this.update();
   }
   
+  private _isFilter : boolean;
+  public get isFilter() : boolean {
+    return this._isFilter;
+  }
+  public set isFilter(v : boolean) {
+    this._isFilter = v;
+    this.update();
+  }
 
   onBeforeShow(msg: Message): void {
     super.onBeforeShow(msg);
@@ -49,6 +58,8 @@ export class ImageEditorPanelWrapper extends ReactWidget {
           docRegistry={this._docRegistry}
           isCropping={this.isCropping}
           setIsCropping={(v) => {this.isCropping = v;}}
+          isFilter={this.isFilter}
+          setIsFilter={(v) => {this.isFilter = v;}}
         />
     ) : null);
   }
@@ -71,6 +82,8 @@ export interface IImageEditorPanelProps {
   docRegistry: DocumentRegistry;
   isCropping: boolean;
   setIsCropping: (v: boolean) => void;
+  isFilter: boolean;
+  setIsFilter: (v: boolean) => void;
 }
 
 
@@ -94,11 +107,22 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
     props.commands.execute('application:toggle-left-area');
   }
 
+  const applyFilter = (type: string, options: any) => {
+    props.commands.execute('image-editor:apply-filter', {type, options});
+  }
+
   return (
     <div className="jp-ImageEditorPanel">
       {props.isCropping ? <button onClick={applyCrop}>Apply</button> : null}
       {props.isCropping ? <button onClick={cancelCrop}>Cancel</button> : null}
-      {!props.isCropping ? "No advanced options to show." : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Grayscale', null)}>Grayscale</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Invert', null)}>Invert</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Sepia', null)}>Sepia</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('vintage', null)}>Sepia2</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Blur', { blur: 0.1 })}>Blur</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Sharpen', null)}>Sharpen</button> : null}
+      {props.isFilter ? <button onClick={() => applyFilter('Emboss', null)}>Emboss</button> : null}
+      {(!props.isCropping && !props.isFilter) ? "No advanced options to show." : null}
     </div>
   );
 }
