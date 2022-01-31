@@ -27,6 +27,7 @@ namespace CommandIDs {
   export const applyCrop = 'image-editor:apply-crop';
   export const cancelCrop = 'image-editor:cancel-crop';
   export const applyFilter = 'image-editor:apply-filter';
+  export const openFilter = 'image-editor:open-filter';
 }
 
 const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
@@ -97,11 +98,11 @@ function activate(
           })
         },
         {
-          name: CommandIDs.applyFilter,
+          name: CommandIDs.openFilter,
           widget: new CommandToolbarButton(
           {
             commands: app.commands,
-            id: CommandIDs.applyFilter,
+            id: CommandIDs.openFilter,
             args: {
               toolbar: true
             }
@@ -153,7 +154,7 @@ function activate(
       }
     })
 
-    app.commands.addCommand(CommandIDs.applyFilter, {
+    app.commands.addCommand(CommandIDs.openFilter, {
       label: (args) => args?.toolbar ? 'Filter': 'Filter',
       execute: (args) => {
         const widget = tracker.currentWidget;
@@ -163,6 +164,17 @@ function activate(
         }
         prPanel.isFilter = true;
         app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyFilter, {
+      label: (args) => args?.toolbar ? 'Apply Filter': 'Apply Filter',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
         widget.content.filter(args.type as string, args.options);
       }
     })
@@ -209,7 +221,7 @@ function activate(
         category: 'Image Editor Operations'
       });
       palette.addItem({
-        command: CommandIDs.applyFilter,
+        command: CommandIDs.openFilter,
         category: 'Image Editor Operations'
       });
     }
