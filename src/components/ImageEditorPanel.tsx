@@ -61,7 +61,9 @@ export enum Operator {
   Crop,
   Filter,
   Flip,
-  Rotate
+  Rotate,
+  Draw,
+  Clear
 }
 
 /**
@@ -113,6 +115,14 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
     props.commands.execute('image-editor:apply-rotate', {type});
   }
 
+  const applyDraw = (type: string) => {
+    props.commands.execute('image-editor:apply-draw', {type});
+  }
+
+  const applyClear = () => {
+    props.commands.execute('image-editor:apply-clear');
+  }
+
   let child: React.ReactNode = null;
 
   switch (props.operation) {
@@ -139,7 +149,13 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
       child = [<button onClick={() => applyRotate('clock')}>Clockwise</button>,
                 <button onClick={() => applyRotate('counter')}>Counter-Clockwise</button>
               ]
-      break
+      break;
+    case Operator.Draw:
+      child = [<button onClick={() => applyDraw('freeDrawing')}>Free Drawing</button>,
+                <button onClick={() => applyDraw('straightLine')}>Straight Line</button>]
+      break;
+    case Operator.Clear:
+      child = <button onClick={applyClear}>Clear</button>
     default:
       child = "No advanced options to show."
       break;

@@ -11,6 +11,15 @@ function resizeEditor() {
   (editor as HTMLElement).style.height = height;
 }
 
+function hexToRGBa(hex: string, alpha: number): string {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  var a = alpha || 1;
+
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
 export class ImageEditorWidget extends Widget {
     private _editor: any;
     private context: DocumentRegistry.Context;
@@ -81,6 +90,25 @@ export class ImageEditorWidget extends Widget {
         this._editor.resetFlip();
       }
       this.updateModel();
+    }
+
+    draw(type: string) {
+      let settings = {
+        width: 12,
+        color: hexToRGBa("#000000", 0.5),
+      }
+      this._editor.stopDrawingMode();
+      if (type === "freeDrawing") {
+        this._editor.startDrawingMode('FREE_DRAWING', settings);
+      }
+      else if (type === "straightLine") {
+        this._editor.startDrawingMode('LINE_DRAWING', settings);
+      }
+      this.updateModel();
+    }
+
+    clear() {
+      this._editor.clearObjects();
     }
   
     private updateModel() {

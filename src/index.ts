@@ -31,6 +31,9 @@ namespace CommandIDs {
   export const applyFilter = 'image-editor:apply-filter';
   export const openFlip = 'image-editor:open-flip';
   export const applyFlip = 'image-editor:apply-flip';
+  export const openDraw = 'image-editor:open-draw';
+  export const applyDraw = 'image-editor:apply-draw';
+  export const applyClear = 'image-editor:apply-clear';
 }
 
 const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
@@ -118,6 +121,28 @@ function activate(
           {
             commands: app.commands,
             id: CommandIDs.openFlip,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.openDraw,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openDraw,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.applyClear,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.applyClear,
             args: {
               toolbar: true
             }
@@ -233,6 +258,43 @@ function activate(
       }
     })
 
+    app.commands.addCommand(CommandIDs.openDraw, {
+      label: (args) => args?.toolbar ? 'Draw': 'Draw',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        prPanel.operation = Operator.Draw;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyDraw, {
+      label: (args) => args?.toolbar ? 'Apply Draw': 'Apply Draw',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.draw(args.type as string);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyClear, {
+      label: (args) => args?.toolbar ? 'Clear': 'Apply Clear',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.clear();
+      }
+    })
+
     app.commands.addCommand(CommandIDs.applyCrop, {
       label: (args) => args?.toolbar ? 'Apply': 'Apply Crop',
       execute: async () => {
@@ -280,6 +342,14 @@ function activate(
       });
       palette.addItem({
         command: CommandIDs.openFlip,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.openDraw,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.applyClear,
         category: 'Image Editor Operations'
       });
     }
