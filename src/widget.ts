@@ -38,8 +38,15 @@ export class ImageEditorWidget extends Widget {
         this._ready.resolve(void 0);
       }
     
-    rotate() {
-      this._editor.rotate(30);
+    applyRotate(type: string) {
+      if (type === "clock")
+      {
+        this._editor.rotate(30);
+      }
+      else
+      {
+        this._editor.rotate(-30);
+      }
       this.updateModel();
     }
   
@@ -60,6 +67,19 @@ export class ImageEditorWidget extends Widget {
 
     filter(type: string, options: any) {
       this._editor.applyFilter(type, options);
+      this.updateModel();
+    }
+
+    flip(type: string) {
+      if (type === "X") {
+        this._editor.flipX();
+      }
+      else if (type === "Y") {
+        this._editor.flipY();
+      }
+      else {
+        this._editor.resetFlip();
+      }
       this.updateModel();
     }
   

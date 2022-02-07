@@ -19,6 +19,8 @@ export class ImageEditorPanelWrapper extends ReactWidget {
     this._docRegistry = docRegistry;
     this._isCropping = false;
     this._isFilter = false;
+    this._isFlip = false;
+    this._isRotate = false;
   }
 
   private _isCropping : boolean;
@@ -36,6 +38,24 @@ export class ImageEditorPanelWrapper extends ReactWidget {
   }
   public set isFilter(v : boolean) {
     this._isFilter = v;
+    this.update();
+  }
+
+  private _isFlip : boolean;
+  public get isFlip() : boolean {
+    return this._isFlip;
+  }
+  public set isFlip(v : boolean) {
+    this._isFlip = v;
+    this.update();
+  }
+
+  private _isRotate : boolean;
+  public get isRotate() : boolean {
+    return this._isRotate;
+  }
+  public set isRotate(v : boolean) {
+    this._isRotate = v;
     this.update();
   }
 
@@ -60,6 +80,10 @@ export class ImageEditorPanelWrapper extends ReactWidget {
           setIsCropping={(v) => {this.isCropping = v;}}
           isFilter={this.isFilter}
           setIsFilter={(v) => {this.isFilter = v;}}
+          isFlip={this.isFlip}
+          setIsFlip={(v) => {this.isFlip = v;}}
+          isRotate={this.isRotate}
+          setIsRotate={(v) => {this.isRotate = v;}}
         />
     ) : null);
   }
@@ -84,6 +108,10 @@ export interface IImageEditorPanelProps {
   setIsCropping: (v: boolean) => void;
   isFilter: boolean;
   setIsFilter: (v: boolean) => void;
+  isFlip: boolean;
+  setIsFlip: (v: boolean) => void;
+  isRotate: boolean;
+  setIsRotate: (v: boolean) => void;
 }
 
 
@@ -111,6 +139,14 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
     props.commands.execute('image-editor:apply-filter', {type, options});
   }
 
+  const applyFlip = (type: string) => {
+    props.commands.execute('image-editor:apply-flip', {type});
+  }
+
+  const applyRotate = (type: string) => {
+    props.commands.execute('image-editor:apply-rotate', {type});
+  }
+
   return (
     <div className="jp-ImageEditorPanel">
       {props.isCropping ? <button onClick={applyCrop}>Apply</button> : null}
@@ -122,7 +158,12 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
       {props.isFilter ? <button onClick={() => applyFilter('Blur', { blur: 0.1 })}>Blur</button> : null}
       {props.isFilter ? <button onClick={() => applyFilter('Sharpen', null)}>Sharpen</button> : null}
       {props.isFilter ? <button onClick={() => applyFilter('Emboss', null)}>Emboss</button> : null}
-      {(!props.isCropping && !props.isFilter) ? "No advanced options to show." : null}
+      {props.isFlip ? <button onClick={() => applyFlip('X')}>FlipX</button> : null}
+      {props.isFlip ? <button onClick={() => applyFlip('Y')}>FlipY</button> : null}
+      {props.isFlip ? <button onClick={() => applyFlip('reset')}>Reset</button> : null}
+      {props.isRotate ? <button onClick={() => applyRotate('clock')}>Clockwise</button> : null}
+      {props.isRotate ? <button onClick={() => applyRotate('counter')}>Counter-Clockwise</button> : null}
+      {(!props.isCropping && !props.isFilter && !props.isFlip && !props.isRotate) ? "No advanced options to show." : null}
     </div>
   );
 }

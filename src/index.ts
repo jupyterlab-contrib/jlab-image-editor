@@ -22,12 +22,15 @@ import { ImageEditorPanelWrapper } from './components/ImageEditorPanel';
 const FACTORY = 'ImageEditor';
 
 namespace CommandIDs {
-  export const rotateClockwise = 'image-editor:rotate-clockwise';
   export const crop = 'image-editor:crop';
   export const applyCrop = 'image-editor:apply-crop';
   export const cancelCrop = 'image-editor:cancel-crop';
-  export const applyFilter = 'image-editor:apply-filter';
+  export const openRotate = 'image-editor:open-rotate';
+  export const applyRotate = 'image-editor:apply-rotate';
   export const openFilter = 'image-editor:open-filter';
+  export const applyFilter = 'image-editor:apply-filter';
+  export const openFlip = 'image-editor:open-flip';
+  export const applyFlip = 'image-editor:apply-flip';
 }
 
 const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
@@ -64,23 +67,24 @@ function activate(
       fileTypes: ['png', 'jpg', 'jpeg'],
       defaultFor: ['png', 'jpg', 'jpeg'],
       toolbarFactory: () => {
-        return [{
-          name: CommandIDs.rotateClockwise,
-          widget: new CommandToolbarButton(
-          {
-            commands: app.commands,
-            id: CommandIDs.rotateClockwise,
-            args: {
-              toolbar: true
-            }
-          })
-        },
+        return [
         {
           name: CommandIDs.crop,
           widget: new CommandToolbarButton(
           {
             commands: app.commands,
             id: CommandIDs.crop,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.openRotate,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openRotate,
             args: {
               toolbar: true
             }
@@ -108,6 +112,17 @@ function activate(
             }
           })
         },
+        {
+          name: CommandIDs.openFlip,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openFlip,
+            args: {
+              toolbar: true
+            }
+          })
+        },
       ]
       }
     });
@@ -127,8 +142,8 @@ function activate(
     });
     app.docRegistry.addWidgetFactory(factory);
 
-    app.commands.addCommand(CommandIDs.rotateClockwise, {
-      label: (args) => args?.toolbar ? 'Rotate': 'Rotate an Image Editor',
+    app.commands.addCommand(CommandIDs.openRotate, {
+      label: (args) => args?.toolbar ? 'Rotate': 'Open Rotate',
       icon: refreshIcon,
       execute: () => {
         const widget = tracker.currentWidget;
@@ -136,7 +151,21 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.rotate();
+        prPanel.isRotate = true;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyRotate, {
+      label: (args) => args?.toolbar ? 'Apply Rotate': 'Apply Rotate',
+      icon: refreshIcon,
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.applyRotate(args.type as string);
       }
     })
 
@@ -156,7 +185,7 @@ function activate(
 
     app.commands.addCommand(CommandIDs.openFilter, {
       label: (args) => args?.toolbar ? 'Filter': 'Filter',
-      execute: (args) => {
+      execute: () => {
         const widget = tracker.currentWidget;
 
         if(!widget){
@@ -176,6 +205,31 @@ function activate(
           return
         }
         widget.content.filter(args.type as string, args.options);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.openFlip, {
+      label: (args) => args?.toolbar ? 'Flip': 'Flip',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        prPanel.isFlip = true;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyFlip, {
+      label: (args) => args?.toolbar ? 'Apply Flip': 'Apply Flip',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.flip(args.type as string);
       }
     })
 
@@ -205,7 +259,7 @@ function activate(
 
     if (palette) {
       palette.addItem({
-        command: CommandIDs.rotateClockwise,
+        command: CommandIDs.openRotate,
         category: 'Image Editor Operations'
       });
       palette.addItem({
@@ -222,6 +276,10 @@ function activate(
       });
       palette.addItem({
         command: CommandIDs.openFilter,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.openFlip,
         category: 'Image Editor Operations'
       });
     }
