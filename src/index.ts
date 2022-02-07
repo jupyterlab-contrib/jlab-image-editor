@@ -17,7 +17,7 @@ import { refreshIcon } from  '@jupyterlab/ui-components';
 import { ImageEditorFactory } from './factory';
 import { IImageEditorTracker } from './tokens';
 import { ImageEditorWidget } from './widget';
-import { ImageEditorPanelWrapper } from './components/ImageEditorPanel';
+import { ImageEditorPanelWrapper, Operator } from './components/ImageEditorPanel';
 
 const FACTORY = 'ImageEditor';
 
@@ -151,7 +151,7 @@ function activate(
         if(!widget){
           return
         }
-        prPanel.isRotate = true;
+        prPanel.operation = Operator.Rotate;
         app.shell.activateById(prPanel.id);
       }
     })
@@ -177,7 +177,7 @@ function activate(
         if(!widget){
           return
         }
-        prPanel.isCropping = true;
+        prPanel.operation = Operator.Crop;
         app.shell.activateById(prPanel.id);
         widget.content.crop();
       }
@@ -191,7 +191,7 @@ function activate(
         if(!widget){
           return
         }
-        prPanel.isFilter = true;
+        prPanel.operation = Operator.Filter;
         app.shell.activateById(prPanel.id);
       }
     })
@@ -216,7 +216,7 @@ function activate(
         if(!widget){
           return
         }
-        prPanel.isFlip = true;
+        prPanel.operation = Operator.Flip;
         app.shell.activateById(prPanel.id);
       }
     })
