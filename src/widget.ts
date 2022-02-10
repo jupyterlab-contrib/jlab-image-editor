@@ -92,10 +92,10 @@ export class ImageEditorWidget extends Widget {
       this.updateModel();
     }
 
-    draw(type: string) {
+    draw(type: string, color: string) {
       let settings = {
         width: 12,
-        color: hexToRGBa("#000000", 0.5),
+        color: hexToRGBa(color, 0.5),
       }
       this._editor.stopDrawingMode();
       if (type === "freeDrawing") {

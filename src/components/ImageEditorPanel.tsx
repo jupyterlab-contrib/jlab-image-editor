@@ -2,7 +2,8 @@ import { ReactWidget } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { CommandRegistry } from '@lumino/commands';
 import { Message } from '@lumino/messaging';
-import React from 'react';
+import React, { useState } from 'react';
+import { Button } from '@jupyter-notebook/react-components';
 
 /**
  * React wrapper to mount and umount the React child component
@@ -89,7 +90,8 @@ export interface IImageEditorPanelProps {
  * @param props ImageEditorPanel properties
  */
 export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
-  // const [isFiltering, setIsFiltering] = useState<boolean>(false);
+  const [brushColor, setBrushColor] = useState<string>("#000000");
+  const [drawingType, setDrawingType] = useState<"freeDrawing" | "straightLine" | null>(null);
 
   const applyCrop = () => {
     props.commands.execute('image-editor:apply-crop');
@@ -115,8 +117,12 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
     props.commands.execute('image-editor:apply-rotate', {type});
   }
 
-  const applyDraw = (type: string) => {
-    props.commands.execute('image-editor:apply-draw', {type});
+  const applyDraw = (type: "freeDrawing" | "straightLine" | null, color: string) => {
+    if (type !== null)
+    {
+      setDrawingType(type);
+      props.commands.execute('image-editor:apply-draw', {type, color});
+    }
   }
 
   const applyClear = () => {
@@ -127,35 +133,37 @@ export function ImageEditorPanel(props: IImageEditorPanelProps): JSX.Element {
 
   switch (props.operation) {
     case Operator.Crop:
-      child = [<button onClick={applyCrop}>Apply</button>, <button onClick={cancelCrop}>Cancel</button>]
+      child = [<Button appearance='accent' onClick={applyCrop}>Apply</Button>, <Button appearance='neutral' onClick={cancelCrop}>Cancel</Button>]
       break;
     case Operator.Filter:
-      child = [<button onClick={() => applyFilter('Grayscale', null)}>Grayscale</button>,
-                <button onClick={() => applyFilter('Invert', null)}>Invert</button>,
-                <button onClick={() => applyFilter('Sepia', null)}>Sepia</button>,
-                <button onClick={() => applyFilter('vintage', null)}>Sepia2</button>,
-                <button onClick={() => applyFilter('Blur', { blur: 0.1 })}>Blur</button>,
-                <button onClick={() => applyFilter('Sharpen', null)}>Sharpen</button>,
-                <button onClick={() => applyFilter('Emboss', null)}>Emboss</button>
+      child = [<Button appearance='neutral' onClick={() => applyFilter('Grayscale', null)}>Grayscale</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('Invert', null)}>Invert</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('Sepia', null)}>Sepia</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('vintage', null)}>Sepia2</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('Blur', { blur: 0.1 })}>Blur</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('Sharpen', null)}>Sharpen</Button>,
+                <Button appearance='neutral' onClick={() => applyFilter('Emboss', null)}>Emboss</Button>
               ]
       break;
     case Operator.Flip:
-      child = [<button onClick={() => applyFlip('X')}>FlipX</button>,
-                <button onClick={() => applyFlip('Y')}>FlipY</button>,
-                <button onClick={() => applyFlip('reset')}>Reset</button>
+      child = [<Button appearance='neutral' onClick={() => applyFlip('X')}>FlipX</Button>,
+                <Button appearance='neutral' onClick={() => applyFlip('Y')}>FlipY</Button>,
+                <Button appearance='neutral' onClick={() => applyFlip('reset')}>Reset</Button>
               ]
       break;
     case Operator.Rotate:
-      child = [<button onClick={() => applyRotate('clock')}>Clockwise</button>,
-                <button onClick={() => applyRotate('counter')}>Counter-Clockwise</button>
+      child = [<Button appearance='neutral' onClick={() => applyRotate('clock')}>Clockwise</Button>,
+                <Button appearance='neutral' onClick={() => applyRotate('counter')}>Counter-Clockwise</Button>
               ]
       break;
     case Operator.Draw:
-      child = [<button onClick={() => applyDraw('freeDrawing')}>Free Drawing</button>,
-                <button onClick={() => applyDraw('straightLine')}>Straight Line</button>]
+      child = [<Button appearance={drawingType==="freeDrawing" ? "accent" : "neutral"} onClick={() => applyDraw('freeDrawing', brushColor)}>Free Drawing</Button>,
+                <Button appearance={drawingType==="straightLine" ? "accent" : "neutral"} onClick={() => applyDraw('straightLine', brushColor)}>Straight Line</Button>,
+                <label className='pickColor'>Pick Color<input type="color" value={brushColor} onChange={(e) => {setBrushColor(e.target.value); applyDraw(drawingType, e.target.value)}}/></label>
+              ]
       break;
     case Operator.Clear:
-      child = <button onClick={applyClear}>Clear</button>
+      child = <Button appearance='neutral' onClick={applyClear}>Clear</Button>
     default:
       child = "No advanced options to show."
       break;

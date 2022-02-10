@@ -45,9 +45,11 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
+    "@jupyter-notebook/react-components": "^0.3.0",
+    "@jupyter-notebook/web-components": "^0.3.0",
     "@jupyterlab/application": "^3.0.0",
-    "@jupyterlab/docregistry": "^3.0.0",
     "@jupyterlab/apputils": "^3.0.0",
+    "@jupyterlab/docregistry": "^3.0.0",
     "@lumino/commands": "^1.20.0",
     "@lumino/coreutils": "^1.12.0",
     "tui-image-editor": "^3.15.2"

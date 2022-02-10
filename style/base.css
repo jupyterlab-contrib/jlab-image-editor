@@ -1,3 +1,18 @@
+.jp-ImageEditorPanel {
+    display: flex;
+    flex-direction: column;
+}
+
+#imageEditorPanel {
+    height: 100%;
+    padding: 4px;
+    background-color: var(--jp-layout-color0);
+}
+
+.pickColor {
+    background-color: var(--jp-layout-color0);
+}
+
 .tui-image-editor {
     height: 100%;
 }

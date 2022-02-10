@@ -17,7 +17,10 @@ import { refreshIcon } from  '@jupyterlab/ui-components';
 import { ImageEditorFactory } from './factory';
 import { IImageEditorTracker } from './tokens';
 import { ImageEditorWidget } from './widget';
+import { brushIcon } from './icon';
 import { ImageEditorPanelWrapper, Operator } from './components/ImageEditorPanel';
+
+import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
 
 const FACTORY = 'ImageEditor';
 
@@ -54,6 +57,7 @@ function activate(
   
     const namespace = 'image-editor';
     const tracker = new WidgetTracker<DocumentWidget<ImageEditorWidget>>({ namespace });
+    addJupyterLabThemeChangeListener();
   
     // Handle state restoration.
     if(restorer) {
@@ -279,7 +283,7 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.draw(args.type as string);
+        widget.content.draw(args.type as string, args.color as string);
       }
     })
 
@@ -356,6 +360,7 @@ function activate(
 
     const prPanel = new ImageEditorPanelWrapper(app.commands, app.docRegistry);
     prPanel.id = 'imageEditorPanel';
+    prPanel.title.icon = brushIcon;
     prPanel.title.caption = 'Image Editor Panel';
 
     // Let the application restorer track the running panel for restoration
