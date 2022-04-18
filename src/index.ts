@@ -17,14 +17,26 @@ import { refreshIcon } from  '@jupyterlab/ui-components';
 import { ImageEditorFactory } from './factory';
 import { IImageEditorTracker } from './tokens';
 import { ImageEditorWidget } from './widget';
+import { brushIcon } from './icon';
+import { ImageEditorPanelWrapper, Operator } from './components/ImageEditorPanel';
+
+import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
 
 const FACTORY = 'ImageEditor';
 
 namespace CommandIDs {
-  export const rotateClockwise = 'image-editor:rotate-clockwise';
   export const crop = 'image-editor:crop';
   export const applyCrop = 'image-editor:apply-crop';
   export const cancelCrop = 'image-editor:cancel-crop';
+  export const openRotate = 'image-editor:open-rotate';
+  export const applyRotate = 'image-editor:apply-rotate';
+  export const openFilter = 'image-editor:open-filter';
+  export const applyFilter = 'image-editor:apply-filter';
+  export const openFlip = 'image-editor:open-flip';
+  export const applyFlip = 'image-editor:apply-flip';
+  export const openDraw = 'image-editor:open-draw';
+  export const applyDraw = 'image-editor:apply-draw';
+  export const applyClear = 'image-editor:apply-clear';
 }
 
 const extension: JupyterFrontEndPlugin<IImageEditorTracker> = {
@@ -45,6 +57,7 @@ function activate(
   
     const namespace = 'image-editor';
     const tracker = new WidgetTracker<DocumentWidget<ImageEditorWidget>>({ namespace });
+    addJupyterLabThemeChangeListener();
   
     // Handle state restoration.
     if(restorer) {
@@ -61,17 +74,7 @@ function activate(
       fileTypes: ['png', 'jpg', 'jpeg'],
       defaultFor: ['png', 'jpg', 'jpeg'],
       toolbarFactory: () => {
-        return [{
-          name: CommandIDs.rotateClockwise,
-          widget: new CommandToolbarButton(
-          {
-            commands: app.commands,
-            id: CommandIDs.rotateClockwise,
-            args: {
-              toolbar: true
-            }
-          })
-        },
+        return [
         {
           name: CommandIDs.crop,
           widget: new CommandToolbarButton(
@@ -84,22 +87,11 @@ function activate(
           })
         },
         {
-          name: CommandIDs.applyCrop,
+          name: CommandIDs.openRotate,
           widget: new CommandToolbarButton(
           {
             commands: app.commands,
-            id: CommandIDs.applyCrop,
-            args: {
-              toolbar: true
-            }
-          })
-        },
-        {
-          name: CommandIDs.cancelCrop,
-          widget: new CommandToolbarButton(
-          {
-            commands: app.commands,
-            id: CommandIDs.cancelCrop,
+            id: CommandIDs.openRotate,
             args: {
               toolbar: true
             }
@@ -115,7 +107,51 @@ function activate(
               toolbar: true
             }
           })
-        }
+        },
+        {
+          name: CommandIDs.openFilter,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openFilter,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.openFlip,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openFlip,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.openDraw,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.openDraw,
+            args: {
+              toolbar: true
+            }
+          })
+        },
+        {
+          name: CommandIDs.applyClear,
+          widget: new CommandToolbarButton(
+          {
+            commands: app.commands,
+            id: CommandIDs.applyClear,
+            args: {
+              toolbar: true
+            }
+          })
+        },
       ]
       }
     });
@@ -135,8 +171,8 @@ function activate(
     });
     app.docRegistry.addWidgetFactory(factory);
 
-    app.commands.addCommand(CommandIDs.rotateClockwise, {
-      label: (args) => args?.toolbar ? 'Rotate': 'Rotate an Image Editor',
+    app.commands.addCommand(CommandIDs.openRotate, {
+      label: (args) => args?.toolbar ? 'Rotate': 'Open Rotate',
       icon: refreshIcon,
       execute: () => {
         const widget = tracker.currentWidget;
@@ -144,7 +180,21 @@ function activate(
         if(!widget){
           return
         }
-        widget.content.rotate();
+        prPanel.operation = Operator.Rotate;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyRotate, {
+      label: (args) => args?.toolbar ? 'Apply Rotate': 'Apply Rotate',
+      icon: refreshIcon,
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.applyRotate(args.type as string);
       }
     })
 
@@ -156,7 +206,96 @@ function activate(
         if(!widget){
           return
         }
+        prPanel.operation = Operator.Crop;
+        app.shell.activateById(prPanel.id);
         widget.content.crop();
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.openFilter, {
+      label: (args) => args?.toolbar ? 'Filter': 'Filter',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        prPanel.operation = Operator.Filter;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyFilter, {
+      label: (args) => args?.toolbar ? 'Apply Filter': 'Apply Filter',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.filter(args.type as string, args.options);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.openFlip, {
+      label: (args) => args?.toolbar ? 'Flip': 'Flip',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        prPanel.operation = Operator.Flip;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyFlip, {
+      label: (args) => args?.toolbar ? 'Apply Flip': 'Apply Flip',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.flip(args.type as string);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.openDraw, {
+      label: (args) => args?.toolbar ? 'Draw': 'Draw',
+      execute: () => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        prPanel.operation = Operator.Draw;
+        app.shell.activateById(prPanel.id);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyDraw, {
+      label: (args) => args?.toolbar ? 'Apply Draw': 'Apply Draw',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.draw(args.type as string, args.color as string);
+      }
+    })
+
+    app.commands.addCommand(CommandIDs.applyClear, {
+      label: (args) => args?.toolbar ? 'Clear': 'Apply Clear',
+      execute: (args) => {
+        const widget = tracker.currentWidget;
+
+        if(!widget){
+          return
+        }
+        widget.content.clear();
       }
     })
 
@@ -186,7 +325,7 @@ function activate(
 
     if (palette) {
       palette.addItem({
-        command: CommandIDs.rotateClockwise,
+        command: CommandIDs.openRotate,
         category: 'Image Editor Operations'
       });
       palette.addItem({
@@ -201,7 +340,36 @@ function activate(
         command: CommandIDs.cancelCrop,
         category: 'Image Editor Operations'
       });
+      palette.addItem({
+        command: CommandIDs.openFilter,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.openFlip,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.openDraw,
+        category: 'Image Editor Operations'
+      });
+      palette.addItem({
+        command: CommandIDs.applyClear,
+        category: 'Image Editor Operations'
+      });
     }
+
+    const prPanel = new ImageEditorPanelWrapper(app.commands, app.docRegistry);
+    prPanel.id = 'imageEditorPanel';
+    prPanel.title.icon = brushIcon;
+    prPanel.title.caption = 'Image Editor Panel';
+
+    // Let the application restorer track the running panel for restoration
+    if(restorer) {
+      restorer.add(prPanel, namespace);
+    }
+
+    // Add the panel to the sidebar
+    app.shell.add(prPanel, 'left', { rank: 1000 });
 
     return tracker
   }

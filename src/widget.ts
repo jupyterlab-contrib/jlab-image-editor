@@ -11,6 +11,15 @@ function resizeEditor() {
   (editor as HTMLElement).style.height = height;
 }
 
+function hexToRGBa(hex: string, alpha: number): string {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  var a = alpha || 1;
+
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
 export class ImageEditorWidget extends Widget {
     private _editor: any;
     private context: DocumentRegistry.Context;
@@ -38,8 +47,15 @@ export class ImageEditorWidget extends Widget {
         this._ready.resolve(void 0);
       }
     
-    rotate() {
-      this._editor.rotate(30);
+    applyRotate(type: string) {
+      if (type === "clock")
+      {
+        this._editor.rotate(30);
+      }
+      else
+      {
+        this._editor.rotate(-30);
+      }
       this.updateModel();
     }
   
@@ -56,6 +72,43 @@ export class ImageEditorWidget extends Widget {
   
     cancelCrop() {
       this._editor.stopDrawingMode();
+    }
+
+    filter(type: string, options: any) {
+      this._editor.applyFilter(type, options);
+      this.updateModel();
+    }
+
+    flip(type: string) {
+      if (type === "X") {
+        this._editor.flipX();
+      }
+      else if (type === "Y") {
+        this._editor.flipY();
+      }
+      else {
+        this._editor.resetFlip();
+      }
+      this.updateModel();
+    }
+
+    draw(type: string, color: string) {
+      let settings = {
+        width: 12,
+        color: hexToRGBa(color, 0.5),
+      }
+      this._editor.stopDrawingMode();
+      if (type === "freeDrawing") {
+        this._editor.startDrawingMode('FREE_DRAWING', settings);
+      }
+      else if (type === "straightLine") {
+        this._editor.startDrawingMode('LINE_DRAWING', settings);
+      }
+      this.updateModel();
+    }
+
+    clear() {
+      this._editor.clearObjects();
     }
   
     private updateModel() {
