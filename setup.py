@@ -1,5 +1,5 @@
 """
-image_editor setup
+JupyterLab image editor setup
 """
 import json
 import sys
@@ -10,7 +10,7 @@ import setuptools
 HERE = Path(__file__).parent.resolve()
 
 # The name of the project
-name = "image_editor"
+name = "jupyterlab_image_editor"
 
 lab_path = (HERE / name.replace("-", "_") / "labextension")
 

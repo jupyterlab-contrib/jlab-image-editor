@@ -1,15 +1,15 @@
 {
   "name": "image-editor",
   "version": "0.1.0",
-  "description": "simple image editing in jupyter lab",
+  "description": "Simple image editor in JupyterLab.",
   "keywords": [
     "jupyter",
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/madhur-tandon/jlab-image-editor.git",
+  "homepage": "https://github.com/jupyterlab-contrib/jlab-image-editor.git",
   "bugs": {
-    "url": "https://github.com/madhur-tandon/jlab-image-editor.git/issues"
+    "url": "https://github.com/jupyterlab-contrib/jlab-image-editor.git/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -25,7 +25,7 @@
   "style": "style/index.css",
   "repository": {
     "type": "git",
-    "url": "https://github.com/madhur-tandon/jlab-image-editor.git.git"
+    "url": "https://github.com/jupyterlab-contrib/jlab-image-editor.git.git"
   },
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
@@ -35,7 +35,7 @@
     "build:lib": "tsc",
     "clean": "jlpm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:labextension": "rimraf image_editor/labextension",
+    "clean:labextension": "rimraf jupyterlab_image_editor/labextension",
     "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -45,8 +45,8 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyter-notebook/react-components": "^0.3.0",
-    "@jupyter-notebook/web-components": "^0.3.0",
+    "@jupyter-notebook/react-components": "^0.9.1",
+    "@jupyter-notebook/web-components": "^0.9.1",
     "@jupyterlab/application": "^3.0.0",
     "@jupyterlab/apputils": "^3.0.0",
     "@jupyterlab/docregistry": "^3.0.0",
@@ -76,13 +76,16 @@
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "image_editor/labextension"
+    "outputDir": "jupyterlab_image_editor/labextension"
   },
   "jupyter-releaser": {
     "hooks": {
       "before-build-npm": [
         "python -m pip install jupyterlab~=3.1",
         "jlpm"
+      ],
+      "before-build-python": [
+        "jlpm clean:all"
       ]
     }
   }
