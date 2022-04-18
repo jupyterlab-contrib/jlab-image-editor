@@ -1,10 +1,12 @@
-# image_editor
+# Image Editor
 
-[![Github Actions Status](https://github.com/madhur-tandon/jlab-image-editor.git/workflows/Build/badge.svg)](https://github.com/madhur-tandon/jlab-image-editor.git/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/madhur-tandon/jlab-image-editor.git/main?urlpath=lab)
+[![Extension status](https://img.shields.io/badge/status-draft-critical "Draft")](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/jlab-image-editor/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jlab-image-editor/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jlab-image-editor.git/main?urlpath=lab)
 
-simple image editing in jupyter lab
+Simple image editor in JupyterLab.
 
+![Demo](https://raw.githubusercontent.com/jupyterlab-contrib/jlab-image-editor/master/demo.png)
 
+> This extension makes use of [material design icons](https://github.com/google/material-design-icons) released under [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.html).
 
 ## Requirements
 
@@ -15,7 +17,7 @@ simple image editing in jupyter lab
 To install the extension, execute:
 
 ```bash
-pip install image_editor
+pip install jupyterlab_image_editor
 ```
 
 ## Uninstall
@@ -23,7 +25,7 @@ pip install image_editor
 To remove the extension, execute:
 
 ```bash
-pip uninstall image_editor
+pip uninstall jupyterlab_image_editor
 ```
 
 
@@ -39,7 +41,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the image_editor directory
+# Change directory to the jupyterlab_image_editor directory
 # Install package in development mode
 pip install -e .
 # Link your development version of the extension with JupyterLab
@@ -68,7 +70,7 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall image_editor
+pip uninstall jupyterlab_image_editor
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
