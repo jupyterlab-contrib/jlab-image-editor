@@ -1,6 +1,6 @@
 # Image Editor
 
-[![Extension status](https://img.shields.io/badge/status-draft-critical "Draft")](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/jlab-image-editor/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jlab-image-editor/actions/workflows/build.yml)[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jlab-image-editor.git/main?urlpath=lab)
+[![Extension status](https://img.shields.io/badge/status-draft-critical "Draft")](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/jlab-image-editor/workflows/Build/badge.svg)](https://github.com/jupyterlab-contrib/jlab-image-editor/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/jlab-image-editor.git/main?urlpath=lab) [![PyPI](https://img.shields.io/pypi/v/jupyterlab-image-editor)](https://pypi.org/project/jupyterlab-image-editor)
 
 Simple image editor in JupyterLab.
 
